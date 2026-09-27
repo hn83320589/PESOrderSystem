@@ -14,6 +14,7 @@ const messages = {
     state: '登入逾時，請再按一次。',
     line_error: 'LINE 暫時連不上，請稍後再試。',
     line_not_configured: '線上叫貨還在準備中。',
+    session: '登入已經失效，請再用 LINE 登入一次。',
 };
 const error = computed(() => messages[route.query.error]);
 const needsShop = computed(() => ['not_bound', 'bind_invalid', 'line_in_use', 'line_not_configured'].includes(route.query.error));

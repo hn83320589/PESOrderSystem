@@ -1,7 +1,8 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
-import { loadMe } from './store';
+import { onUnauthorized } from '../shared/http';
+import { loadMe, me } from './store';
 import Catalog from './pages/Catalog.vue';
 import Done from './pages/Done.vue';
 import Home from './pages/Home.vue';
@@ -38,6 +39,14 @@ router.beforeEach(async (to) => {
     }
     if (to.meta.guest && customer) {
         return '/';
+    }
+});
+
+// 原本已登入、之後被登出（例如店家解除 LINE 綁定）：導回登入頁並說明
+onUnauthorized(() => {
+    if (me.value) {
+        me.value = null;
+        window.location.href = '/login?error=session';
     }
 });
 

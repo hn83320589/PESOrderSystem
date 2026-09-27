@@ -9,6 +9,12 @@ export class ApiError extends Error {
     }
 }
 
+// 登入失效（被登出、解除綁定、session 過期）時由各前端決定導向何處
+let unauthorizedHandler = null;
+export const onUnauthorized = (handler) => {
+    unauthorizedHandler = handler;
+};
+
 export async function api(method, url, body) {
     const response = await fetch(url, {
         method,
@@ -23,6 +29,9 @@ export async function api(method, url, body) {
     });
 
     const data = response.status === 204 ? null : await response.json().catch(() => null);
+    if (response.status === 401) {
+        unauthorizedHandler?.();
+    }
     if (!response.ok) {
         throw new ApiError(response.status, data);
     }

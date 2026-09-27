@@ -135,8 +135,10 @@ Laravel 13（單一專案）
 - [ ] 取得 LINE Login channel 後以真實帳號測試登入與綁定（目前以模擬回應測試）
 
 ### Step 8：測試與試用（第 4 週）
-- [ ] 全流程 E2E 手動測試腳本（建單 → 確認 → 出貨 → 收款 → 月結）
-- [ ] 2-3 位熟客試用，回饋記錄於 `docs/feedback.md`
+- [x] 試用資料 `TrialSeeder`（`php artisan migrate:fresh --seed --seeder=TrialSeeder`）：3 位情境客戶、經正式服務建立的歷史訂單與預留
+- [x] 試用劇本 `docs/TRIAL_SCRIPT.md`（S1–S8）與回饋表 `docs/feedback.md`
+- [x] 端對端測試 `TrialScenarioTest` 逐一驗證劇本情境，劇本與程式脫鉤時失敗
+- [ ] 2-3 位熟客實際試用、整理回饋、回填 elderly-friendly skill（需客戶配合）
 
 ### Step 9：部署（第 4 週後）
 - [ ] 主機選擇（需與客戶討論預算）、HTTPS 網域（LINE webhook 必須 HTTPS）

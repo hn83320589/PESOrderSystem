@@ -1,7 +1,8 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
-import { ensureUser } from './auth';
+import { onUnauthorized } from '../shared/http';
+import { currentUser, ensureUser } from './auth';
 import Customers from './pages/Customers.vue';
 import Inventory from './pages/Inventory.vue';
 import Login from './pages/Login.vue';
@@ -40,6 +41,14 @@ router.beforeEach(async (to) => {
     }
     if (to.meta.guest && user) {
         return '/';
+    }
+});
+
+// 使用中 session 過期：回登入頁，避免停在空白畫面
+onUnauthorized(() => {
+    if (currentUser.value) {
+        currentUser.value = null;
+        window.location.href = '/admin/login';
     }
 });
 
