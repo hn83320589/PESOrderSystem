@@ -13,11 +13,18 @@ use Tests\TestCase;
 
 /**
  * 以多個獨立 PHP process 同時搶購同一規格，驗證不會超賣。
- * 使用檔案型 SQLite（in-memory 資料庫無法跨 process 共用）。
+ *
+ * 不使用 RefreshDatabase：worker 是獨立 process，必須看得到已提交的資料。
+ * 因此改用專屬的暫存資料庫，測完即刪，避免資料殘留影響其他測試：
+ * - SQLite：暫存檔（SQLite 寫入本身會序列化，驗證的是防護條件是否正確）
+ * - MySQL：暫存 database（真正並行的交易，驗證實際競爭情境）
  */
 class InventoryConcurrencyTest extends TestCase
 {
-    private string $databaseFile;
+    private string $driver;
+
+    /** @var array<string, string> 傳給 worker 的資料庫環境變數 */
+    private array $workerEnv;
 
     private string $barrierFile;
 
@@ -25,22 +32,61 @@ class InventoryConcurrencyTest extends TestCase
     {
         parent::setUp();
 
-        $this->databaseFile = tempnam(sys_get_temp_dir(), 'pes-concurrency-').'.sqlite';
-        $this->barrierFile = $this->databaseFile.'.start';
-        touch($this->databaseFile);
+        $connection = config('database.default');
+        $this->driver = config("database.connections.{$connection}.driver");
+        $this->barrierFile = tempnam(sys_get_temp_dir(), 'pes-concurrency-barrier-');
+        unlink($this->barrierFile);
 
-        config(['database.connections.sqlite.database' => $this->databaseFile]);
-        DB::purge('sqlite');
-        Artisan::call('migrate', ['--force' => true]);
+        match ($this->driver) {
+            'sqlite' => $this->useSqliteFile(),
+            'mysql', 'mariadb' => $this->useMysqlDatabase($connection),
+            default => $this->markTestSkipped("並發測試不支援 {$this->driver}"),
+        };
+
+        Artisan::call('migrate:fresh', ['--force' => true]);
     }
 
     protected function tearDown(): void
     {
-        DB::disconnect('sqlite');
-        foreach (['', '-wal', '-shm', '-journal', '.start'] as $suffix) {
-            @unlink($this->databaseFile.$suffix);
+        @unlink($this->barrierFile);
+        $connection = config('database.default');
+        DB::disconnect($connection);
+
+        if ($this->driver === 'sqlite') {
+            foreach (['', '-wal', '-shm', '-journal'] as $suffix) {
+                @unlink($this->workerEnv['DB_DATABASE'].$suffix);
+            }
+        } else {
+            DB::connection($connection)->statement('DROP DATABASE IF EXISTS `'.$this->workerEnv['DB_DATABASE'].'`');
         }
         parent::tearDown();
+    }
+
+    private function useSqliteFile(): void
+    {
+        $file = tempnam(sys_get_temp_dir(), 'pes-concurrency-').'.sqlite';
+        touch($file);
+        config(['database.connections.sqlite.database' => $file]);
+        DB::purge('sqlite');
+        $this->workerEnv = ['DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => $file];
+    }
+
+    private function useMysqlDatabase(string $connection): void
+    {
+        $config = config("database.connections.{$connection}");
+        $database = $config['database'].'_concurrency';
+        DB::connection($connection)->statement("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+
+        config(["database.connections.{$connection}.database" => $database]);
+        DB::purge($connection);
+        $this->workerEnv = [
+            'DB_CONNECTION' => $connection,
+            'DB_HOST' => (string) $config['host'],
+            'DB_PORT' => (string) $config['port'],
+            'DB_DATABASE' => $database,
+            'DB_USERNAME' => (string) $config['username'],
+            'DB_PASSWORD' => (string) $config['password'],
+        ];
     }
 
     public function test_parallel_allocations_never_oversell(): void
@@ -52,7 +98,7 @@ class InventoryConcurrencyTest extends TestCase
         $pool = Process::pool(function ($pool) use ($workers, $variant, $order) {
             foreach (range(1, $workers) as $i) {
                 $pool->path(base_path())
-                    ->env(['DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => $this->databaseFile, 'APP_ENV' => 'testing'])
+                    ->env($this->workerEnv + ['APP_ENV' => 'testing'])
                     ->timeout(30)
                     ->command([PHP_BINARY, 'tests/Support/allocate_worker.php', $variant->id, 1, $order->id, $this->barrierFile]);
             }
