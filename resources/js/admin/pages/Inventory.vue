@@ -76,6 +76,7 @@ const signed = (n) => (n > 0 ? `+${n}` : n || '');
                         <th class="text-right">熟客預留</th>
                         <th class="text-right">已下單未出貨</th>
                         <th class="text-right">可用量</th>
+                        <th class="text-right">平均成本</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -90,13 +91,14 @@ const signed = (n) => (n > 0 ? `+${n}` : n || '');
                         <td class="text-right font-bold" :class="{ 'text-red-600': v.stock.available < LOW_STOCK_THRESHOLD }">
                             {{ v.stock.available }}
                         </td>
+                        <td class="text-right text-gray-600 tabular-nums">{{ v.avg_cost != null ? `$${v.avg_cost}` : '—' }}</td>
                         <td class="space-x-1 text-right whitespace-nowrap">
                             <button class="btn" @click="openAdjust(v)">調整</button>
                             <button class="btn" @click="openHistory(v)">紀錄</button>
                         </td>
                     </tr>
                     <tr v-if="!variants.length">
-                        <td colspan="8" class="py-8 text-center text-gray-400">沒有資料</td>
+                        <td colspan="9" class="py-8 text-center text-gray-400">沒有資料</td>
                     </tr>
                 </tbody>
             </table>

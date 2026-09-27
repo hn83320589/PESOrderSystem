@@ -14,7 +14,11 @@ import OrderForm from './pages/OrderForm.vue';
 import Orders from './pages/Orders.vue';
 import Payments from './pages/Payments.vue';
 import Products from './pages/Products.vue';
+import PurchaseForm from './pages/PurchaseForm.vue';
+import Purchases from './pages/Purchases.vue';
+import ReorderSuggestions from './pages/ReorderSuggestions.vue';
 import Reservations from './pages/Reservations.vue';
+import Suppliers from './pages/Suppliers.vue';
 
 const router = createRouter({
     history: createWebHistory('/admin/'),
@@ -30,6 +34,10 @@ const router = createRouter({
         { path: '/payments', name: 'payments', component: Payments },
         { path: '/reports/monthly', name: 'monthly-report', component: MonthlyReport },
         { path: '/products', name: 'products', component: Products },
+        { path: '/purchases', name: 'purchases', component: Purchases },
+        { path: '/purchases/new', name: 'purchase-create', component: PurchaseForm },
+        { path: '/purchases/suggestions', name: 'reorder-suggestions', component: ReorderSuggestions },
+        { path: '/suppliers', name: 'suppliers', component: Suppliers },
         { path: '/notifications', name: 'notifications', component: Notifications },
         { path: '/inventory', name: 'inventory', component: Inventory },
         { path: '/reservations', name: 'reservations', component: Reservations },

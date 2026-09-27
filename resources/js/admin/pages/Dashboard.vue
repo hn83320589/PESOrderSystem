@@ -67,7 +67,7 @@ const overdue = computed(() => data.value.aging.slice(2).reduce((sum, a) => sum 
                     <p v-if="overdue" class="mt-2 text-sm text-red-700">⚠ 其中 {{ money(overdue) }} 已超過 60 天</p>
                     <RouterLink to="/payments" class="mt-3 inline-block text-sm text-blue-700 hover:underline">前往收款</RouterLink>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4 xl:grid-cols-3">
                     <div class="rounded bg-white p-4 shadow">
                         <p class="text-sm text-gray-600">本月至今出貨</p>
                         <p class="mt-1 text-2xl font-semibold">{{ money(data.summary.shipped_this_month) }}</p>
@@ -76,6 +76,17 @@ const overdue = computed(() => data.value.aging.slice(2).reduce((sum, a) => sum 
                     <div class="rounded bg-white p-4 shadow">
                         <p class="text-sm text-gray-600">本月至今收款</p>
                         <p class="mt-1 text-2xl font-semibold">{{ money(data.summary.collected_this_month) }}</p>
+                    </div>
+                    <div class="rounded bg-white p-4 shadow">
+                        <p class="text-sm text-gray-600">本月至今毛利</p>
+                        <p class="mt-1 text-2xl font-semibold">{{ data.summary.gross_margin_rate === null ? '—' : money(data.summary.gross_profit_this_month) }}</p>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <template v-if="data.summary.gross_margin_rate === null">尚無成本資料，進貨入庫後開始計算</template>
+                            <template v-else>毛利率 {{ (data.summary.gross_margin_rate * 100).toFixed(1) }}%</template>
+                        </p>
+                        <p v-if="data.summary.cost_coverage !== null && data.summary.cost_coverage < 1" class="mt-1 text-xs text-amber-700">
+                            僅計 {{ Math.round(data.summary.cost_coverage * 100) }}% 有成本資料的出貨
+                        </p>
                     </div>
                     <RouterLink :to="{ name: 'orders', query: { status: 'pending' } }" class="rounded bg-white p-4 shadow hover:ring-2 hover:ring-blue-200">
                         <p class="text-sm text-gray-600">待確認訂單</p>

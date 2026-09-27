@@ -19,6 +19,8 @@ class VariantResource extends JsonResource
             'spec' => $this->spec,
             'sku' => $this->sku,
             'price' => $this->price,
+            // 僅管理端使用此 Resource；客戶端商品目錄另行組裝，不含成本
+            'avg_cost' => $this->avg_cost,
             'is_active' => $this->is_active,
             'stock' => new InventoryResource($this->whenLoaded('inventory')),
         ];

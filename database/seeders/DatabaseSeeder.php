@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -28,9 +29,15 @@ class DatabaseSeeder extends Seeder
         User::factory()->create(['name' => '工讀生', 'email' => 'staff@example.com', 'password' => 'password']);
 
         $this->call(CatalogSeeder::class);
-        ProductVariant::with('inventory')->get()->each(
-            fn (ProductVariant $v) => $v->inventory->update(['on_hand' => fake()->numberBetween(20, 300)]),
-        );
+        ProductVariant::with('inventory')->get()->each(function (ProductVariant $v) {
+            $v->inventory->update(['on_hand' => fake()->numberBetween(20, 300)]);
+            // 展示用成本：約為售價 7 成，讓總覽有毛利可看
+            $v->update(['avg_cost' => round($v->price * fake()->randomFloat(2, 0.65, 0.8), 2)]);
+        });
+
+        foreach ([['南亞塑膠經銷', '陳經理', '04-2311-0001'], ['大亞電線電纜', '林業務', '04-2322-0002'], ['中部五金批發', '黃先生', '04-2333-0003']] as [$name, $contact, $phone]) {
+            Supplier::create(['name' => $name, 'contact_name' => $contact, 'phone' => $phone]);
+        }
 
         $customers = Customer::factory(10)->create();
         $customers->first()->update(['name' => '測試水電行（已綁 LINE）']);
@@ -60,6 +67,7 @@ class DatabaseSeeder extends Seeder
                 foreach ($variants->random(fake()->numberBetween(2, 5)) as $variant) {
                     OrderItem::factory()->for($order)->for($variant, 'variant')->create([
                         'quantity' => fake()->numberBetween(1, 30),
+                        'unit_cost' => $variant->avg_cost,
                     ]);
                 }
 

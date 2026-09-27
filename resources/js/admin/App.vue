@@ -8,6 +8,7 @@ const links = [
     { to: '/reports/monthly', label: '月結對帳' },
     { to: '/customers', label: '客戶' },
     { to: '/inventory', label: '庫存' },
+    { to: '/purchases', label: '進貨' },
     { to: '/products', label: '商品' },
     { to: '/reservations', label: '熟客預留' },
     { to: '/notifications', label: '通知紀錄' },
