@@ -142,9 +142,9 @@ Laravel 13（單一專案）
 
 ### Step 9：部署（第 4 週後）
 - [ ] 主機選擇（需與客戶討論預算）、HTTPS 網域（LINE webhook 必須 HTTPS）
-- [ ] MySQL 8 上重跑全部測試（含並發測試）
+- [x] MySQL 8 上重跑全部測試（含並發測試）：MySQL 8.4.11，189 個全數通過
 - [ ] cron `schedule:run`、queue worker（Supervisor）
-- [ ] 部署文件 `docs/DEPLOY.md`
+- [x] 部署文件 `docs/DEPLOY.md`、正式環境建立帳號指令 `staff:create`
 
 ---
 

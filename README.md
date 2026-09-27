@@ -172,13 +172,13 @@ php artisan queue:work                # 發送 LINE 通知（未執行則通知�
 php artisan schedule:work             # 預留到期釋放（每小時）與提醒（每天 09:00）
 ```
 
-正式環境以 Supervisor 常駐 `queue:work`，並以 cron 執行 `* * * * * php artisan schedule:run`。
+正式環境部署（Nginx、Supervisor、cron、備份、上線前檢查清單）見 [`docs/DEPLOY.md`](docs/DEPLOY.md)。正式環境以 `php artisan staff:create <email> <名稱>` 建立內部人員帳號，**不可執行 seeder**。
 
 ### 環境變數
 
 | 變數 | 說明 |
 |---|---|
-| `APP_URL` | 網站網址；LINE Login 回呼網址由此產生 |
+| `APP_URL` | 正式 HTTPS 網址（排程、queue 產生網址時使用）；位於反向代理後方時另需設定 trustProxies，見[部署指南](docs/DEPLOY.md) |
 | `DB_CONNECTION` 等 | 開發用 `sqlite`，正式用 `mysql` |
 | `SHOP_NAME`、`SHOP_PHONE`、`SHOP_ADDRESS` | 顯示於 LINE 通知、PDF 訂貨單、客戶端 |
 | `SHOP_BANK_NAME`、`SHOP_BANK_ACCOUNT`、`SHOP_BANK_ACCOUNT_NAME` | 匯款帳號，印在匯款訂單與通知上 |
@@ -243,7 +243,7 @@ php artisan test        # 159 個測試
 
 ## 已知限制
 
-- **尚未部署**：並發測試目前在 SQLite 上執行（SQLite 會序列化寫入），上線前需在 MySQL 8 重跑完整測試。
+- **尚未部署**：部署步驟已備妥（[部署指南](docs/DEPLOY.md)），待決定主機與網域。全部測試（含真正並行的防超賣測試）已於 MySQL 8.4.11 通過。
 - **LINE 尚未以真實帳號實測**：推播、webhook、LINE Login 依官方規格實作並以模擬回應測試，需待店家申請完成後實測。
 - **熟客試用尚未進行**：中高齡介面的字級、按鈕大小等數值為實作採用值，尚無使用者觀察；見 [試用劇本](docs/TRIAL_SCRIPT.md) 與 [回饋表](docs/feedback.md)。
 - 客戶送出後不能自行改單（需電話聯絡店家）；一個客戶只能綁定一個 LINE 帳號。
@@ -265,5 +265,6 @@ php artisan test        # 159 個測試
 | [`docs/TRIAL_SCRIPT.md`](docs/TRIAL_SCRIPT.md) | 熟客試用劇本（S1–S8） |
 | [`docs/feedback.md`](docs/feedback.md) | 試用回饋表 |
 | [`docs/WEB_PUSH_EVALUATION.md`](docs/WEB_PUSH_EVALUATION.md) | Web Push 通知評估 |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | 部署指南與上線前檢查清單 |
 
 字型 Noto Sans TC 以 SIL Open Font License 1.1 授權，授權檔位於 `resources/fonts/NotoSansTC/OFL.txt`。
