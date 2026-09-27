@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Customer;
 use App\Http\Controllers\Line;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,14 @@ Route::prefix('admin')->group(function () {
         Route::get('reports/monthly/export', [Admin\ReportController::class, 'exportMonthly']);
         Route::get('reports/monthly/{customer}', [Admin\ReportController::class, 'customerMonthly']);
     });
+});
+
+/*
+ * 客戶端 API（guard: customer）。所有查詢一律從登入客戶本身出發，不接受外部傳入的 customer_id
+ */
+Route::prefix('customer')->middleware(['auth:customer', 'customer.bound'])->group(function () {
+    Route::post('logout', [Customer\LineAuthController::class, 'logout']);
+    Route::get('me', [Customer\AccountController::class, 'me']);
 });
 
 /*

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCustomerLineBinding;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // 兩個 SPA 與 API 同網域，API 走 session cookie 認證（Sanctum stateful）
         $middleware->statefulApi();
+        $middleware->alias(['customer.bound' => EnsureCustomerLineBinding::class]);
         // API 未登入一律回 401 JSON，不做頁面轉址（登入頁由 SPA 自行處理）
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : '/');
     })

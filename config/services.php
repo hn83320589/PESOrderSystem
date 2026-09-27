@@ -41,4 +41,10 @@ return [
         'channel_secret' => env('LINE_CHANNEL_SECRET'),
     ],
 
+    // LINE Login（客戶登入）。必須與 Messaging API channel 在同一個 Provider，userId 才一致
+    'line_login' => [
+        'channel_id' => env('LINE_LOGIN_CHANNEL_ID'),
+        'channel_secret' => env('LINE_LOGIN_CHANNEL_SECRET'),
+    ],
+
 ];
