@@ -126,12 +126,13 @@ Laravel 13（單一專案）
 - [x] 以 PyMuPDF 轉圖檢視版面、確認嵌入 Regular/Bold 字型（本機無 poppler）
 
 ### Step 7：客戶端陽春版（第 4 週）
-- [ ] LINE Login + 綁定流程：後台產生一次性綁定連結 → 客戶點開並用 LINE 登入 → 寫入 line_user_id；未綁定的 LINE 帳號只看到「請聯絡店家」
-- [ ] 頁面：首頁（大按鈕：下單／老樣子／我的訂單）、下單、老樣子、訂單列表與付款狀態、預留確認、站內通知
-- [ ] 依 `elderly-friendly-self-service-ui` 原則：字級 ≥ 18px、按鈕高度 ≥ 48px、送出前確認頁、防止重複送出
-- [ ] 越權測試：每支客戶端 API 都測「拿別人的 ID → 404」
-- [ ] 客戶端認證 middleware 需確認 session 中的 LINE userId 仍與客戶綁定一致，後台「解除綁定」後既有登入立即失效
-- [ ] 用 `frontend-design` skill 檢查手機可用性
+- [x] LINE Login + 綁定流程：後台產生一次性綁定連結 → 客戶點開並用 LINE 登入 → 寫入 line_user_id；未綁定的 LINE 帳號只看到「請聯絡店家」
+- [x] 頁面：首頁（大按鈕：下單／老樣子／我的訂單）、下單、老樣子、訂單列表與付款狀態、預留確認、站內通知
+- [x] 依 `elderly-friendly-self-service-ui` 原則：整體放大 125%（基準 20px）、按鈕高 ≥ 64px、數量用 ± 按鈕、送出前「叫貨單」確認頁、request_id 防重複送出
+- [x] 越權測試：每支客戶端 API 都測「拿別人的 ID → 404」
+- [x] 客戶端認證 middleware 需確認 session 中的 LINE userId 仍與客戶綁定一致，後台「解除綁定」後既有登入立即失效
+- [x] 以 390×844 手機尺寸實測全流程並修正換行問題
+- [ ] 取得 LINE Login channel 後以真實帳號測試登入與綁定（目前以模擬回應測試）
 
 ### Step 8：測試與試用（第 4 週）
 - [ ] 全流程 E2E 手動測試腳本（建單 → 確認 → 出貨 → 收款 → 月結）

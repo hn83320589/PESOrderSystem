@@ -36,3 +36,45 @@
         @apply rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700;
     }
 }
+
+/* ── 客戶端（中高齡、手機、LINE 內建瀏覽器）─────────────────── */
+@theme {
+    --color-cu-page: #f2f4f6;
+    --color-cu-ink: #18212f;
+    --color-cu-muted: #4a5566;
+    --color-cu-line: #d5dbe3;
+    --color-cu-pipe: #1d4e89;
+    --color-cu-pipe-dark: #163d6c;
+    --color-cu-slip: #b3261e;
+    --color-cu-caution: #fff1b8;
+    --color-cu-line-green: #06c755;
+}
+
+/* 整個客戶端放大 125%：所有 rem 尺寸同步放大，基準字級 20px */
+html.customer-root {
+    font-size: 125%;
+    background: var(--color-cu-page);
+    color: var(--color-cu-ink);
+}
+
+@layer components {
+    .cu-btn {
+        @apply flex min-h-16 w-full items-center justify-center rounded-xl px-5 text-center text-lg font-bold select-none;
+        @apply focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 disabled:opacity-40;
+    }
+    .cu-btn-primary {
+        @apply bg-cu-pipe text-white active:bg-cu-pipe-dark;
+    }
+    .cu-btn-plain {
+        @apply border-2 border-cu-pipe bg-white text-cu-pipe active:bg-slate-100;
+    }
+    .cu-panel {
+        @apply rounded-xl bg-white;
+    }
+    .cu-num {
+        font-variant-numeric: tabular-nums;
+    }
+    .cu-input {
+        @apply w-full rounded-lg border-2 border-cu-line bg-white px-4 py-3 text-lg focus:border-cu-pipe focus:outline-none;
+    }
+}
