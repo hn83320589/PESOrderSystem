@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ReservationStatus;
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\User;
 use DateTimeInterface;
@@ -70,6 +71,40 @@ class ReservationService
             $user,
             $reservation->note,
         );
+    }
+
+    /**
+     * 客戶下單時消耗其有效預留。回傳可由預留轉為訂單佔用的數量；
+     * 訂購量少於預留量時，剩餘預留直接釋放（預留的用途即為這次叫貨）。
+     * 需在呼叫端的交易中、於 InventoryService::allocate 之前執行。
+     */
+    public function consumeForOrder(Customer $customer, int $variantId, int $quantity, Order $order, ?User $user = null): int
+    {
+        $active = Reservation::where('customer_id', $customer->id)
+            ->where('product_variant_id', $variantId)
+            ->where('status', ReservationStatus::Active)
+            ->where('expires_at', '>', now())
+            ->orderBy('expires_at')
+            ->get();
+
+        $fromReserved = 0;
+        foreach ($active as $reservation) {
+            $claimed = Reservation::whereKey($reservation->id)
+                ->where('status', ReservationStatus::Active)
+                ->update(['status' => ReservationStatus::Fulfilled, 'order_id' => $order->id, 'updated_at' => now()]);
+            if ($claimed === 0) {
+                continue;
+            }
+
+            $used = min($quantity - $fromReserved, $reservation->quantity);
+            $fromReserved += $used;
+            $leftover = $reservation->quantity - $used;
+            if ($leftover > 0) {
+                $this->inventory->releaseReservation($variantId, $leftover, $reservation, $user);
+            }
+        }
+
+        return $fromReserved;
     }
 
     /** @return int 本次釋放的筆數 */
