@@ -70,7 +70,10 @@ async function unbind(customer) {
                         <td>{{ c.phone }}</td>
                         <td>{{ c.billing_type_label }}</td>
                         <td>
-                            <span v-if="c.line_bound" class="text-green-700">已綁定 {{ c.line_display_name }}</span>
+                            <span v-if="c.line_bound && c.line_is_friend === false" class="text-red-600" title="客戶已封鎖或刪除官方帳號，LINE 通知會發送失敗">
+                                已綁定，但已封鎖官方帳號
+                            </span>
+                            <span v-else-if="c.line_bound" class="text-green-700">已綁定 {{ c.line_display_name }}</span>
                             <span v-else class="text-gray-400">未綁定</span>
                         </td>
                         <td class="max-w-48 truncate">{{ c.note }}</td>

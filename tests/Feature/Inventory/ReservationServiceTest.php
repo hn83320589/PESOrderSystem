@@ -3,6 +3,7 @@
 namespace Tests\Feature\Inventory;
 
 use App\Enums\NotificationChannel;
+use App\Enums\NotificationStatus;
 use App\Enums\ReservationStatus;
 use App\Exceptions\InsufficientStockException;
 use App\Models\Customer;
@@ -118,8 +119,9 @@ class ReservationServiceTest extends TestCase
 
         $this->assertNotNull($soon->fresh()->reminded_at);
         $this->assertNull($later->fresh()->reminded_at);
-        $notice = NotificationLog::where('customer_id', $soon->customer_id)->sole();
-        $this->assertSame(NotificationChannel::Site, $notice->channel);
+        $notice = NotificationLog::where('customer_id', $soon->customer_id)->where('channel', NotificationChannel::Site)->sole();
+        $line = NotificationLog::where('customer_id', $soon->customer_id)->where('channel', NotificationChannel::Line)->sole();
+        $this->assertSame(NotificationStatus::Skipped, $line->status, '未綁定 LINE 的客戶只收站內通知');
         $this->assertSame('reservation_expiring', $notice->type);
         $this->assertStringContainsString($soon->variant->product->name, $notice->body);
     }

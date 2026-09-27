@@ -6,6 +6,7 @@ import Customers from './pages/Customers.vue';
 import Inventory from './pages/Inventory.vue';
 import Login from './pages/Login.vue';
 import MonthlyReport from './pages/MonthlyReport.vue';
+import Notifications from './pages/Notifications.vue';
 import OrderDetail from './pages/OrderDetail.vue';
 import OrderForm from './pages/OrderForm.vue';
 import Orders from './pages/Orders.vue';
@@ -26,6 +27,7 @@ const router = createRouter({
         { path: '/payments', name: 'payments', component: Payments },
         { path: '/reports/monthly', name: 'monthly-report', component: MonthlyReport },
         { path: '/products', name: 'products', component: Products },
+        { path: '/notifications', name: 'notifications', component: Notifications },
         { path: '/inventory', name: 'inventory', component: Inventory },
         { path: '/reservations', name: 'reservations', component: Reservations },
     ],

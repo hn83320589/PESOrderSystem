@@ -27,6 +27,7 @@ class Customer extends Authenticatable
             'billing_type' => BillingType::class,
             'is_active' => 'boolean',
             'line_bound_at' => 'datetime',
+            'line_is_friend' => 'boolean',
             'line_bind_token_expires_at' => 'datetime',
         ];
     }

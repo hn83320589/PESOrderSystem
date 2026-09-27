@@ -26,6 +26,8 @@ class OrderService
     public function __construct(
         private readonly InventoryService $inventory,
         private readonly ReservationService $reservations,
+        private readonly CustomerNotifier $notifier,
+        private readonly CustomerMessages $messages,
     ) {}
 
     /**
@@ -106,7 +108,12 @@ class OrderService
 
     public function confirm(Order $order, ?User $user = null): Order
     {
-        return $this->transition($order, [OrderStatus::Pending], OrderStatus::Confirmed, '確認', ['confirmed_at' => now()]);
+        $order = $this->transition($order, [OrderStatus::Pending], OrderStatus::Confirmed, '確認', ['confirmed_at' => now()]);
+
+        [$title, $body] = $this->messages->orderConfirmed($order);
+        $this->notifier->notify($order->customer, 'order_confirmed', $title, $body, $order);
+
+        return $order;
     }
 
     public function ship(Order $order, ?User $user = null): Order

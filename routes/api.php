@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Line;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,8 +49,16 @@ Route::prefix('admin')->group(function () {
         Route::post('payments/{payment}/mark-paid', [Admin\PaymentController::class, 'markPaid']);
         Route::post('payments/{payment}/mark-unpaid', [Admin\PaymentController::class, 'markUnpaid']);
 
+        Route::get('notifications', [Admin\NotificationController::class, 'index']);
+        Route::post('notifications/{notification}/resend', [Admin\NotificationController::class, 'resend']);
+
         Route::get('reports/monthly', [Admin\ReportController::class, 'monthly']);
         Route::get('reports/monthly/export', [Admin\ReportController::class, 'exportMonthly']);
         Route::get('reports/monthly/{customer}', [Admin\ReportController::class, 'customerMonthly']);
     });
 });
+
+/*
+ * LINE 平台 webhook（以 X-Line-Signature 驗證來源，不使用 session）
+ */
+Route::post('line/webhook', Line\WebhookController::class)->name('line.webhook');

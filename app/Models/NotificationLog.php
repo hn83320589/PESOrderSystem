@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[Table('notifications_log')]
-#[Fillable(['customer_id', 'channel', 'type', 'title', 'body', 'status', 'error', 'related_type', 'related_id', 'sent_at', 'read_at'])]
+#[Fillable(['customer_id', 'channel', 'type', 'title', 'body', 'status', 'retry_key', 'error', 'related_type', 'related_id', 'sent_at', 'read_at'])]
 class NotificationLog extends Model
 {
     protected function casts(): array

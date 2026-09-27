@@ -21,6 +21,7 @@ class CustomerResource extends JsonResource
             'billing_type_label' => $this->billing_type->label(),
             'line_bound' => $this->line_user_id !== null,
             'line_display_name' => $this->line_display_name,
+            'line_is_friend' => $this->line_is_friend,
             'note' => $this->note,
             'is_active' => $this->is_active,
         ];

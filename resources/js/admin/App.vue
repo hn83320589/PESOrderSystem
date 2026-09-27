@@ -9,6 +9,7 @@ const links = [
     { to: '/inventory', label: '庫存' },
     { to: '/products', label: '商品' },
     { to: '/reservations', label: '熟客預留' },
+    { to: '/notifications', label: '通知紀錄' },
 ];
 </script>
 

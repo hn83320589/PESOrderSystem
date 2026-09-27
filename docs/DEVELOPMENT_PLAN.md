@@ -109,12 +109,14 @@ Laravel 13（單一專案）
 - [x] Admin 前端：付款頁、月結報表頁
 
 ### Step 5：LINE Messaging API（第 3 週）
-- [ ] 套件 `linecorp/line-bot-sdk`（實作時查官方文件確認新版 API）
-- [ ] `LineNotifier`（Queue job）：推播 + 寫入 notifications_log，失敗記錄錯誤不中斷主流程
-- [ ] Webhook：驗證 `X-Line-Signature`，處理 follow 事件（記錄 userId）
-- [ ] 推播情境：訂單確認、預留到期前 7 天提醒
-- [ ] 測試：用 `Http::fake` 驗證送出內容；簽章錯誤回 400
-- [ ] 無金鑰時：記錄為 skipped，不影響訂單流程（開發期客戶尚未申請完成）
+- [x] 不使用 line-bot-sdk，改以 Laravel Http client 直接呼叫 API（可用 Http::fake 測試、僅需推播與驗簽）
+- [x] `LineNotifier`（Queue job）：推播 + 寫入 notifications_log，失敗記錄錯誤不中斷主流程
+- [x] Webhook：驗證 `X-Line-Signature`，處理 follow 事件（記錄 userId）
+- [x] 推播情境：訂單確認、預留到期前 7 天提醒
+- [x] X-Line-Retry-Key 防重複推播；後台通知紀錄頁可查看失敗原因並重送
+- [ ] 客戶提供金鑰後：填入 .env、於 LINE Developers Console 設定 webhook URL（需 HTTPS）並實測
+- [x] 測試：用 `Http::fake` 驗證送出內容；簽章錯誤回 400
+- [x] 無金鑰時：記錄為 skipped，不影響訂單流程（開發期客戶尚未申請完成）
 
 ### Step 6：PDF 訂單（第 3 週）
 - [ ] 實測 dompdf 與 mpdf 的中文顯示，擇一並回填 `chinese-pdf-invoice-laravel` skill

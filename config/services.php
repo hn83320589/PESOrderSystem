@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // LINE Messaging API（官方帳號推播）。金鑰由客戶於 LINE Developers Console 取得
+    'line' => [
+        'channel_access_token' => env('LINE_CHANNEL_ACCESS_TOKEN'),
+        'channel_secret' => env('LINE_CHANNEL_SECRET'),
+    ],
+
 ];
