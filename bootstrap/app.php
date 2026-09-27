@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // 兩個 SPA 與 API 同網域，API 走 session cookie 認證（Sanctum stateful）
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

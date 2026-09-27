@@ -82,11 +82,11 @@ Laravel 13（單一專案）
 每步完成條件：功能測試通過 + Pint 無警告 + commit。每完成一個模組回報「可放進 README 的哪個章節」。
 
 ### Step 1：環境建置與資料庫（第 1 週）
-- [ ] `git init`、建立 Laravel 13 專案（保留現有 CLAUDE.md、reference/、.claude/）
-- [ ] 安裝 Sanctum、Vue 3、vue-router、Vite 雙 entry
-- [ ] 全部 migrations、Models、關聯、Factories
-- [ ] Seeder：內部帳號、25 種商品×5 規格、10 位客戶、範例訂單
-- [ ] 測試：migrate:fresh --seed 成功、Model 關聯測試
+- [x] `git init`、建立 Laravel 13 專案（保留現有 CLAUDE.md、reference/、.claude/）
+- [x] 安裝 Sanctum、Vue 3、vue-router、Vite 雙 entry
+- [x] 全部 migrations、Models、關聯、Factories
+- [x] Seeder：內部帳號、25 種商品×5 規格、10 位客戶、範例訂單
+- [x] 測試：migrate:fresh --seed 成功、Model 關聯測試
 
 ### Step 2：商品與庫存模組（第 1 週）
 - [ ] `InventoryService`：adjust / reserve / releaseReservation / allocate / release / ship

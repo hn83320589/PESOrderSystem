@@ -1,18 +1,19 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // 兩個前端各自一個 entry，客戶端不會載入管理端程式碼
+            input: ['resources/css/app.css', 'resources/js/admin/main.js', 'resources/js/customer/main.js'],
             refresh: true,
-            fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
-                }),
-            ],
+        }),
+        vue({
+            template: {
+                transformAssetUrls: { base: null, includeAbsolute: false },
+            },
         }),
         tailwindcss(),
     ],
