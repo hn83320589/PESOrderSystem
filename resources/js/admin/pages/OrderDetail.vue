@@ -42,6 +42,9 @@ async function act(action, confirmText) {
         <div class="flex flex-wrap gap-2">
             <button v-if="order.status === 'pending'" class="btn btn-primary" :disabled="busy" @click="act('confirm')">確認訂單</button>
             <button v-if="order.status === 'confirmed'" class="btn btn-primary" :disabled="busy" @click="act('ship', '確定已出貨？將扣除實際庫存。')">標記已出貨</button>
+            <a class="btn" :href="`/api/admin/orders/${order.id}/pdf`" target="_blank" @click="order.print_count++">
+                {{ order.print_count ? `補印訂單（已印 ${order.print_count} 次）` : '列印訂單' }}
+            </a>
             <RouterLink v-if="editable" class="btn" :to="`/orders/${order.id}/edit`">修改訂單</RouterLink>
             <button v-if="['pending', 'confirmed'].includes(order.status)" class="btn btn-danger" :disabled="busy"
                 @click="act('expire', '確定將此訂單設為失效？佔用的庫存會釋放。')">設為失效</button>

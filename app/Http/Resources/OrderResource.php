@@ -30,6 +30,7 @@ class OrderResource extends JsonResource
                 'status_label' => $this->payment->status->label(),
                 'paid_at' => $this->payment->paid_at,
             ] : null),
+            'print_count' => $this->whenCounted('prints'),
             'created_at' => $this->created_at,
             'confirmed_at' => $this->confirmed_at,
             'shipped_at' => $this->shipped_at,

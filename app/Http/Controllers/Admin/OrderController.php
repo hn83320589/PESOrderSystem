@@ -9,9 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Services\OrderPdfService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -100,6 +102,15 @@ class OrderController extends Controller
         return $this->resource($this->orders->expire($order, $request->user('web')));
     }
 
+    public function pdf(Request $request, Order $order, OrderPdfService $pdf): Response
+    {
+        return response($pdf->contentForPrint($order, $request->user('web')), 200, [
+            'Content-Type' => 'application/pdf',
+            // inline：直接在瀏覽器開啟，按列印即可
+            'Content-Disposition' => "inline; filename=\"{$order->order_no}.pdf\"",
+        ]);
+    }
+
     public function recentForCustomer(Customer $customer): AnonymousResourceCollection
     {
         return OrderResource::collection($this->orders->recentForReorder($customer));
@@ -116,6 +127,6 @@ class OrderController extends Controller
 
     private function resource(Order $order): OrderResource
     {
-        return new OrderResource($order->load('customer', 'creator', 'items', 'payment'));
+        return new OrderResource($order->load('customer', 'creator', 'items', 'payment')->loadCount('prints'));
     }
 }

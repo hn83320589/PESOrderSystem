@@ -119,11 +119,11 @@ Laravel 13（單一專案）
 - [x] 無金鑰時：記錄為 skipped，不影響訂單流程（開發期客戶尚未申請完成）
 
 ### Step 6：PDF 訂單（第 3 週）
-- [ ] 實測 dompdf 與 mpdf 的中文顯示，擇一並回填 `chinese-pdf-invoice-laravel` skill
-- [ ] 字型：Noto Sans TC（SIL OFL 授權，可嵌入）
-- [ ] 下單後產生 PDF 存檔；改單時重新產生；補印直接讀取檔案並寫入 order_prints
-- [ ] PDF 內容：單號、日期、客戶、明細、總額、付款方式、匯款帳號
-- [ ] 用 `pdf` skill 開啟確認版面
+- [x] 實測 dompdf 與 mpdf：dompdf 無法在中文句中換行（長文字超出頁面被截斷），選用 mpdf 8.3.1
+- [x] 字型：Noto Sans TC（SIL OFL 授權，可嵌入）
+- [x] 下單後產生 PDF 存檔；改單時重新產生；補印直接讀取檔案並寫入 order_prints
+- [x] PDF 內容：單號、日期、客戶、明細、總額、付款方式、匯款帳號
+- [x] 以 PyMuPDF 轉圖檢視版面、確認嵌入 Regular/Bold 字型（本機無 poppler）
 
 ### Step 7：客戶端陽春版（第 4 週）
 - [ ] LINE Login + 綁定流程：後台產生一次性綁定連結 → 客戶點開並用 LINE 登入 → 寫入 line_user_id；未綁定的 LINE 帳號只看到「請聯絡店家」

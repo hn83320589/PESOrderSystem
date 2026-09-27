@@ -18,6 +18,8 @@
         </include>
     </source>
     <php>
+        <!-- mpdf 解析中文字型約佔 64MB 並常駐；單一請求峰值 66MB，但整套測試累積會超過預設 128MB -->
+        <ini name="memory_limit" value="512M"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>

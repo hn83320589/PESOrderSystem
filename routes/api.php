@@ -43,6 +43,7 @@ Route::prefix('admin')->group(function () {
         Route::post('orders/{order}/confirm', [Admin\OrderController::class, 'confirm']);
         Route::post('orders/{order}/ship', [Admin\OrderController::class, 'ship']);
         Route::post('orders/{order}/expire', [Admin\OrderController::class, 'expire']);
+        Route::get('orders/{order}/pdf', [Admin\OrderController::class, 'pdf']);
 
         Route::get('payments', [Admin\PaymentController::class, 'index']);
         Route::post('payments/bulk-mark-paid', [Admin\PaymentController::class, 'bulkMarkPaid']);

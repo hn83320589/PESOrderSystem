@@ -28,6 +28,7 @@ class OrderService
         private readonly ReservationService $reservations,
         private readonly CustomerNotifier $notifier,
         private readonly CustomerMessages $messages,
+        private readonly OrderPdfService $pdf,
     ) {}
 
     /**
@@ -44,7 +45,7 @@ class OrderService
         $lines = $this->normalizeLines($items);
         $variants = $this->orderableVariants(array_keys($lines));
 
-        return DB::transaction(function () use ($customer, $lines, $variants, $paymentMethod, $source, $user, $note) {
+        $order = DB::transaction(function () use ($customer, $lines, $variants, $paymentMethod, $source, $user, $note) {
             $order = Order::create([
                 'order_no' => 'TMP-'.Str::uuid(),
                 'customer_id' => $customer->id,
@@ -74,6 +75,11 @@ class OrderService
 
             return $order->load('items', 'payment');
         });
+
+        // 已定案：下單當下即產生 PDF
+        $this->pdf->generate($order);
+
+        return $order;
     }
 
     /**
@@ -86,7 +92,7 @@ class OrderService
     {
         $lines = $items === null ? null : $this->normalizeLines($items);
 
-        return DB::transaction(function () use ($order, $lines, $paymentMethod, $note, $user) {
+        $order = DB::transaction(function () use ($order, $lines, $paymentMethod, $note, $user) {
             $order = Order::with('items', 'payment')->lockForUpdate()->findOrFail($order->id);
             $this->assertEditable($order);
 
@@ -104,6 +110,11 @@ class OrderService
 
             return $order->load('items', 'payment');
         });
+
+        // 內容已變更，重新產生 PDF（補印則沿用此最新版本）
+        $this->pdf->generate($order);
+
+        return $order;
     }
 
     public function confirm(Order $order, ?User $user = null): Order
