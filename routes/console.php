@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// 正式環境需設定 cron：* * * * * php artisan schedule:run
+Schedule::command('reservations:expire')->hourly()->withoutOverlapping();
+Schedule::command('reservations:remind')->dailyAt('09:00')->withoutOverlapping();
