@@ -103,10 +103,10 @@ Laravel 13（單一專案）
 - [x] Admin 前端：訂單列表/篩選、建單（代客下單）、訂單詳情
 
 ### Step 4：付款與對帳（第 2 週）
-- [ ] 付款紀錄 CRUD、標記已收/未收、支票號碼與到期日
-- [ ] 月結彙總：指定月份 × 客戶，出貨金額、已收、未收
-- [ ] Excel 匯出（maatwebsite/excel），用 `xlsx` skill 驗證
-- [ ] Admin 前端：付款頁、月結報表頁
+- [x] 付款紀錄 CRUD、標記已收/未收、支票號碼與到期日
+- [x] 月結彙總：指定月份 × 客戶，出貨金額、已收、未收
+- [x] Excel 匯出（maatwebsite/excel 4.0.3），以 PhpSpreadsheet 讀回實檔驗證公式與 0 值（本機無 LibreOffice）
+- [x] Admin 前端：付款頁、月結報表頁
 
 ### Step 5：LINE Messaging API（第 3 週）
 - [ ] 套件 `linecorp/line-bot-sdk`（實作時查官方文件確認新版 API）

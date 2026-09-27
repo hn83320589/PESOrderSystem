@@ -5,9 +5,11 @@ import { ensureUser } from './auth';
 import Customers from './pages/Customers.vue';
 import Inventory from './pages/Inventory.vue';
 import Login from './pages/Login.vue';
+import MonthlyReport from './pages/MonthlyReport.vue';
 import OrderDetail from './pages/OrderDetail.vue';
 import OrderForm from './pages/OrderForm.vue';
 import Orders from './pages/Orders.vue';
+import Payments from './pages/Payments.vue';
 import Products from './pages/Products.vue';
 import Reservations from './pages/Reservations.vue';
 
@@ -21,6 +23,8 @@ const router = createRouter({
         { path: '/orders/:id', name: 'order-detail', component: OrderDetail },
         { path: '/orders/:id/edit', name: 'order-edit', component: OrderForm },
         { path: '/customers', name: 'customers', component: Customers },
+        { path: '/payments', name: 'payments', component: Payments },
+        { path: '/reports/monthly', name: 'monthly-report', component: MonthlyReport },
         { path: '/products', name: 'products', component: Products },
         { path: '/inventory', name: 'inventory', component: Inventory },
         { path: '/reservations', name: 'reservations', component: Reservations },

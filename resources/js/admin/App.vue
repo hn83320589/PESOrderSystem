@@ -3,6 +3,8 @@ import { currentUser, logout } from './auth';
 
 const links = [
     { to: '/orders', label: '訂單' },
+    { to: '/payments', label: '收款' },
+    { to: '/reports/monthly', label: '月結對帳' },
     { to: '/customers', label: '客戶' },
     { to: '/inventory', label: '庫存' },
     { to: '/products', label: '商品' },
