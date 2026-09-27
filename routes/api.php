@@ -42,5 +42,14 @@ Route::prefix('admin')->group(function () {
         Route::post('orders/{order}/confirm', [Admin\OrderController::class, 'confirm']);
         Route::post('orders/{order}/ship', [Admin\OrderController::class, 'ship']);
         Route::post('orders/{order}/expire', [Admin\OrderController::class, 'expire']);
+
+        Route::get('payments', [Admin\PaymentController::class, 'index']);
+        Route::post('payments/bulk-mark-paid', [Admin\PaymentController::class, 'bulkMarkPaid']);
+        Route::post('payments/{payment}/mark-paid', [Admin\PaymentController::class, 'markPaid']);
+        Route::post('payments/{payment}/mark-unpaid', [Admin\PaymentController::class, 'markUnpaid']);
+
+        Route::get('reports/monthly', [Admin\ReportController::class, 'monthly']);
+        Route::get('reports/monthly/export', [Admin\ReportController::class, 'exportMonthly']);
+        Route::get('reports/monthly/{customer}', [Admin\ReportController::class, 'customerMonthly']);
     });
 });
