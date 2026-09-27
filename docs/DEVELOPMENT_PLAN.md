@@ -89,13 +89,14 @@ Laravel 13（單一專案）
 - [x] 測試：migrate:fresh --seed 成功、Model 關聯測試
 
 ### Step 2：商品與庫存模組（第 1 週）
-- [ ] `InventoryService`：adjust / reserve / releaseReservation / allocate / release / ship
-- [ ] **並發測試**：多個 process 同時對同一規格下單，總配置量不超過可用量
-- [ ] `ReservationService` + 排程指令 `reservations:remind`（到期前 7 天）、`reservations:expire`
-- [ ] Admin API：商品/規格 CRUD、庫存調整、預留 CRUD
-- [ ] Admin 前端：登入頁、商品列表、庫存頁、預留頁
+- [x] `InventoryService`：adjust / reserve / releaseReservation / allocate / release / ship
+- [x] **並發測試**：多個 process 同時對同一規格下單，總配置量不超過可用量
+- [x] `ReservationService` + 排程指令 `reservations:remind`（到期前 7 天）、`reservations:expire`
+- [x] Admin API：商品/規格 CRUD、庫存調整、預留 CRUD
+- [x] Admin 前端：登入頁、商品列表、庫存頁、預留頁
 
 ### Step 3：內部訂單管理（第 2 週）
+- [ ] 客戶管理 API 與頁面（新增、編輯、產生 LINE 綁定連結）
 - [ ] `OrderService`：建單（自動使用該客戶有效預留）、改單（僅 pending/confirmed 可改，差額重算庫存）、確認、出貨、失效
 - [ ] 狀態轉換規則測試（不合法轉換必須被擋下）
 - [ ] 老樣子 API：該客戶最近 10 筆訂單 → 一鍵帶入明細（以目前價格與庫存重新檢查）

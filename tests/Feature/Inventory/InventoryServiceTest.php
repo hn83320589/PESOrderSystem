@@ -90,6 +90,7 @@ class InventoryServiceTest extends TestCase
         } catch (InsufficientStockException $e) {
             $this->assertSame(10, $e->available);
             $this->assertSame(11, $e->requested);
+            $this->assertStringContainsString($variant->product->name, $e->getMessage(), '錯誤訊息要讓人員看得懂是哪個商品');
         }
 
         $this->assertSame([10, 0, 0], $this->stockOf($variant));

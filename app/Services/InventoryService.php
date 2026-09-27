@@ -126,10 +126,16 @@ class InventoryService
 
     private function throwInsufficient(int $variantId, int $requested): never
     {
-        $inventory = Inventory::where('product_variant_id', $variantId)->first()
+        $inventory = Inventory::with('variant.product')->where('product_variant_id', $variantId)->first()
             ?? throw new InvalidArgumentException("規格 #{$variantId} 不存在");
+        $variant = $inventory->variant;
 
-        throw new InsufficientStockException($variantId, $requested, $inventory->available());
+        throw new InsufficientStockException(
+            $variantId,
+            $requested,
+            $inventory->available(),
+            "「{$variant->product->name} {$variant->spec}」庫存不足：需要 {$requested}，目前可用 {$inventory->available()}",
+        );
     }
 
     private function assertPositive(int $quantity): void

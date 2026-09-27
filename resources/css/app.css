@@ -5,3 +5,34 @@
 @theme {
     --font-sans: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', ui-sans-serif, system-ui, sans-serif;
 }
+
+/* 管理端共用樣式 */
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center rounded border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50;
+    }
+    .btn-primary {
+        @apply border-blue-600 bg-blue-600 text-white hover:bg-blue-700;
+    }
+    .btn-danger {
+        @apply border-red-300 text-red-700 hover:bg-red-50;
+    }
+    .input {
+        @apply w-full rounded border border-gray-300 px-2 py-1.5 focus:border-blue-500 focus:outline-none;
+    }
+    .label {
+        @apply mb-1 block text-sm font-medium text-gray-700;
+    }
+    .table {
+        @apply w-full border-collapse bg-white text-sm;
+    }
+    .table th {
+        @apply border-b bg-gray-50 px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600;
+    }
+    .table td {
+        @apply border-b px-3 py-2;
+    }
+    .alert-error {
+        @apply rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700;
+    }
+}

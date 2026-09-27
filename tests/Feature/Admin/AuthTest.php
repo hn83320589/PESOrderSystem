@@ -23,6 +23,16 @@ class AuthTest extends TestCase
         $this->assertGuest('web');
     }
 
+    public function test_login_works_on_a_host_other_than_app_url(): void
+    {
+        // 正式網域與 APP_URL 不一致（或開發時換 port）時，同網域 SPA 仍須能登入
+        User::factory()->create(['email' => 'boss@example.com', 'password' => 'secret123']);
+
+        $this->withHeader('Referer', 'http://shop.example.test/admin/login')
+            ->postJson('http://shop.example.test/api/admin/login', ['email' => 'boss@example.com', 'password' => 'secret123'])
+            ->assertOk();
+    }
+
     public function test_wrong_password_is_rejected(): void
     {
         User::factory()->create(['email' => 'boss@example.com', 'password' => 'secret123']);

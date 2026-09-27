@@ -19,10 +19,12 @@ return [
     */
 
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
+        '%s%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
+        // 兩個 SPA 與 API 永遠同網域：Referer 與本次請求主機相同即視為自家前端，
+        // 部署時不必另外設定 SANCTUM_STATEFUL_DOMAINS
+        Sanctum::currentRequestHost(),
     ))),
 
     /*
