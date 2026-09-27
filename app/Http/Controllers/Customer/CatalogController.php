@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 
 class CatalogController extends Controller
 {
-    /** 可用量低於此數顯示「少量」 */
-    private const LOW_STOCK = 10;
-
     public function index(): JsonResponse
     {
         $products = Product::where('is_active', true)
@@ -40,7 +38,7 @@ class CatalogController extends Controller
     {
         return match (true) {
             $available <= 0 => 'out',
-            $available < self::LOW_STOCK => 'low',
+            $available < Inventory::LOW_STOCK_THRESHOLD => 'low',
             default => 'in_stock',
         };
     }

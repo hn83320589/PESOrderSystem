@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { api } from '../../shared/http';
 import { dateTime, errorMessage } from '../../shared/format';
 import Modal from '../components/Modal.vue';
 
 const variants = ref([]);
 const keyword = ref('');
-const lowStockOnly = ref(false);
+const lowStockOnly = ref(useRoute().query.low === '1');
 const LOW_STOCK_THRESHOLD = 10;
 const loadError = ref('');
 

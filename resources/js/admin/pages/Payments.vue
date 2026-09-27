@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { api } from '../../shared/http';
 import { date, dateTime, errorMessage, money } from '../../shared/format';
 import MarkPaidForm from '../components/MarkPaidForm.vue';
 import Modal from '../components/Modal.vue';
 
-const filters = ref({ status: 'unpaid', customer_id: '' });
+const route = useRoute();
+const filters = ref({ status: 'unpaid', customer_id: route.query.customer_id ? Number(route.query.customer_id) : '' });
 const payments = ref([]);
 const customers = ref([]);
 const selected = ref([]);

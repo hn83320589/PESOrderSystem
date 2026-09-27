@@ -4,6 +4,7 @@ import App from './App.vue';
 import { onUnauthorized } from '../shared/http';
 import { currentUser, ensureUser } from './auth';
 import Customers from './pages/Customers.vue';
+import Dashboard from './pages/Dashboard.vue';
 import Inventory from './pages/Inventory.vue';
 import Login from './pages/Login.vue';
 import MonthlyReport from './pages/MonthlyReport.vue';
@@ -18,7 +19,8 @@ import Reservations from './pages/Reservations.vue';
 const router = createRouter({
     history: createWebHistory('/admin/'),
     routes: [
-        { path: '/', redirect: '/orders' },
+        { path: '/', redirect: '/dashboard' },
+        { path: '/dashboard', name: 'dashboard', component: Dashboard },
         { path: '/login', name: 'login', component: Login, meta: { guest: true } },
         { path: '/orders', name: 'orders', component: Orders },
         { path: '/orders/new', name: 'order-create', component: OrderForm },

@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['on_hand', 'reserved', 'allocated'])]
 class Inventory extends Model
 {
+    /** 可用量低於此數視為低庫存（後台總覽、客戶端「剩不多」共用） */
+    public const LOW_STOCK_THRESHOLD = 10;
+
     protected function casts(): array
     {
         return [

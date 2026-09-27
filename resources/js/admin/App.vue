@@ -2,6 +2,7 @@
 import { currentUser, logout } from './auth';
 
 const links = [
+    { to: '/dashboard', label: '總覽' },
     { to: '/orders', label: '訂單' },
     { to: '/payments', label: '收款' },
     { to: '/reports/monthly', label: '月結對帳' },
@@ -17,7 +18,7 @@ const links = [
     <div class="min-h-screen">
         <header v-if="currentUser" class="flex flex-wrap items-center gap-4 bg-slate-800 px-4 py-2 text-white">
             <span class="font-bold">水電訂單管理</span>
-            <nav class="flex gap-1">
+            <nav class="-mx-1 flex max-w-full gap-1 overflow-x-auto px-1 whitespace-nowrap">
                 <RouterLink
                     v-for="link in links"
                     :key="link.to"
