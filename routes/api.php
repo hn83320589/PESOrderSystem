@@ -29,5 +29,9 @@ Route::prefix('admin')->group(function () {
         Route::post('reservations/{reservation}/renew', [Admin\ReservationController::class, 'renew']);
 
         Route::get('customers', [Admin\CustomerController::class, 'index']);
+        Route::post('customers', [Admin\CustomerController::class, 'store']);
+        Route::patch('customers/{customer}', [Admin\CustomerController::class, 'update']);
+        Route::post('customers/{customer}/line-bind-link', [Admin\CustomerController::class, 'issueBindLink']);
+        Route::delete('customers/{customer}/line-binding', [Admin\CustomerController::class, 'unbindLine']);
     });
 });
