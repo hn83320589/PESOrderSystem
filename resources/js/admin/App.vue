@@ -2,6 +2,8 @@
 import { currentUser, logout } from './auth';
 
 const links = [
+    { to: '/orders', label: '訂單' },
+    { to: '/customers', label: '客戶' },
     { to: '/inventory', label: '庫存' },
     { to: '/products', label: '商品' },
     { to: '/reservations', label: '熟客預留' },
