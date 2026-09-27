@@ -21,7 +21,7 @@ function back() {
             <button v-if="showBack" class="flex min-h-12 min-w-12 items-center justify-center rounded-lg text-2xl text-cu-pipe active:bg-slate-100" aria-label="回上一頁" @click="back">
                 ‹ <span class="ml-1 text-lg">返回</span>
             </button>
-            <h1 class="flex-1 truncate text-xl font-bold" :class="{ 'pl-2': !showBack }">{{ title ?? shop.name }}</h1>
+            <h1 class="flex-1 truncate text-xl font-bold outline-none" :class="{ 'pl-2': !showBack }" tabindex="-1" data-page-title>{{ title ?? shop.name }}</h1>
             <RouterLink v-if="route.path !== '/'" to="/" class="rounded-lg px-3 py-2 text-lg text-cu-pipe active:bg-slate-100">首頁</RouterLink>
         </header>
         <main>

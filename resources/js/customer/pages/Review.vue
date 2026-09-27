@@ -83,7 +83,7 @@ async function submit() {
                 <p class="mb-3 text-lg font-bold">怎麼付款</p>
                 <div class="grid grid-cols-3 gap-2">
                     <label v-for="option in paymentOptions" :key="option.value"
-                        class="flex min-h-14 cursor-pointer items-center justify-center rounded-lg border-2 text-lg font-bold"
+                        class="flex min-h-14 cursor-pointer items-center justify-center rounded-lg border-2 text-lg font-bold has-[:focus-visible]:outline-4 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-amber-400"
                         :class="payment === option.value ? 'border-cu-pipe bg-cu-pipe text-white' : 'border-cu-line bg-white'">
                         <input v-model="payment" type="radio" name="payment" :value="option.value" class="sr-only" />{{ option.label }}
                     </label>

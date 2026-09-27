@@ -2,7 +2,8 @@ import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
 import { onUnauthorized } from '../shared/http';
-import { loadMe, me } from './store';
+import { nextTick } from 'vue';
+import { loadMe, me, shop } from './store';
 import Catalog from './pages/Catalog.vue';
 import Done from './pages/Done.vue';
 import Home from './pages/Home.vue';
@@ -40,6 +41,17 @@ router.beforeEach(async (to) => {
     if (to.meta.guest && customer) {
         return '/';
     }
+});
+
+// 單頁應用換頁時瀏覽器不會自動處理：更新分頁標題，並把焦點移到新頁面的標題，讓螢幕閱讀器知道換頁了
+let firstNavigation = true;
+router.afterEach((to) => {
+    document.title = to.meta.title ? `${to.meta.title}｜${shop.name}` : `${shop.name}｜線上叫貨`;
+    if (firstNavigation) {
+        firstNavigation = false;
+        return;
+    }
+    nextTick(() => document.querySelector('[data-page-title]')?.focus({ preventScroll: true }));
 });
 
 // 原本已登入、之後被登出（例如店家解除 LINE 綁定）：導回登入頁並說明

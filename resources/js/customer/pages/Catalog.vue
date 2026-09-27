@@ -33,8 +33,8 @@ const pickedIn = (product) => product.variants.filter((v) => quantityOf(v.id) > 
 <template>
     <div class="px-4 pt-4" :class="{ 'pb-36': cartCount }">
         <input v-model="keyword" type="search" class="cu-input" placeholder="找商品，例如：水管、開關" aria-label="搜尋商品" />
-        <div class="mt-3 flex gap-2" role="tablist" aria-label="商品分類">
-            <button v-for="c in ['', ...categories]" :key="c" role="tab" :aria-selected="category === c"
+        <div class="mt-3 flex gap-2" role="group" aria-label="商品分類">
+            <button v-for="c in ['', ...categories]" :key="c" :aria-pressed="category === c"
                 class="min-h-12 flex-1 rounded-lg border-2 text-lg font-bold"
                 :class="category === c ? 'border-cu-pipe bg-cu-pipe text-white' : 'border-cu-line bg-white'"
                 @click="category = c">{{ c ? `${c}類` : '全部' }}</button>
@@ -42,14 +42,14 @@ const pickedIn = (product) => product.variants.filter((v) => quantityOf(v.id) > 
 
         <ul class="cu-panel mt-4 divide-y divide-cu-line">
             <li v-for="product in visible" :key="product.id">
-                <button class="flex min-h-16 w-full items-center justify-between gap-3 px-5 py-3 text-left" :aria-expanded="openProduct === product.id"
+                <button class="flex min-h-16 w-full items-center justify-between gap-3 px-5 py-3 text-left" :aria-expanded="openProduct === product.id" :aria-controls="`specs-${product.id}`"
                     @click="openProduct = openProduct === product.id ? null : product.id">
                     <span class="text-xl font-bold">{{ product.name }}</span>
                     <span class="shrink-0 text-lg text-cu-pipe">
                         <template v-if="pickedIn(product)">已選 {{ pickedIn(product) }} 種　</template>{{ openProduct === product.id ? '收起' : '選規格' }}
                     </span>
                 </button>
-                <ul v-if="openProduct === product.id" class="space-y-4 bg-slate-50 px-5 py-4">
+                <ul v-if="openProduct === product.id" :id="`specs-${product.id}`" class="space-y-4 bg-slate-50 px-5 py-4">
                     <li v-for="v in product.variants" :key="v.id" class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <p class="text-xl font-bold">{{ v.spec }}</p>
@@ -64,7 +64,7 @@ const pickedIn = (product) => product.variants.filter((v) => quantityOf(v.id) > 
 
         <div v-if="cartCount" class="fixed inset-x-0 bottom-0 border-t-2 border-cu-line bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <div class="mx-auto max-w-[560px]">
-                <p class="mb-2 text-lg">已選 {{ cartCount }} 項，約 <strong class="cu-num">{{ money(cartTotal) }}</strong></p>
+                <p class="mb-2 text-lg" aria-live="polite">已選 {{ cartCount }} 項，約 <strong class="cu-num">{{ money(cartTotal) }}</strong></p>
                 <RouterLink to="/review" class="cu-btn cu-btn-primary">下一步：看叫貨單</RouterLink>
             </div>
         </div>
