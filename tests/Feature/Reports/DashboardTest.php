@@ -12,6 +12,7 @@ use App\Services\OrderService;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -142,6 +143,27 @@ class DashboardTest extends TestCase
             ->assertJsonPath('data.summary.gross_profit_this_month', 400)
             ->assertJsonPath('data.summary.gross_margin_rate', 0.4)
             ->assertJsonPath('data.summary.cost_coverage', 0.5);
+    }
+
+    public function test_line_quota_is_shown_when_configured_and_cached(): void
+    {
+        config(['services.line.channel_access_token' => 'token', 'services.line.channel_secret' => 'secret']);
+        Http::fake([
+            'api.line.me/v2/bot/message/quota/consumption' => Http::response(['totalUsage' => 180]),
+            'api.line.me/v2/bot/message/quota' => Http::response(['type' => 'limited', 'value' => 200]),
+        ]);
+
+        $this->getJson('/api/admin/dashboard')->assertJsonPath('data.line_quota', ['used' => 180, 'limit' => 200]);
+        $this->getJson('/api/admin/dashboard');
+
+        Http::assertSentCount(2);
+    }
+
+    public function test_line_quota_is_null_without_credentials(): void
+    {
+        config(['services.line.channel_access_token' => null]);
+
+        $this->getJson('/api/admin/dashboard')->assertJsonPath('data.line_quota', null);
     }
 
     public function test_months_parameter_is_limited(): void

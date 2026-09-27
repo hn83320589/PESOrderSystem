@@ -8,8 +8,10 @@ use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Services\Line\LineMessagingClient;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * 老闆總覽：應收、出貨與收款趨勢、帳齡、熱銷商品。
@@ -24,6 +26,8 @@ class DashboardService
     /** 帳齡區間：[標籤, 天數上限（含）] */
     private const AGING_BUCKETS = [['0–30 天', 30], ['31–60 天', 60], ['61–90 天', 90], ['90 天以上', PHP_INT_MAX]];
 
+    public function __construct(private readonly LineMessagingClient $line) {}
+
     public function build(int $months): array
     {
         $receivables = $this->unpaidShipped();
@@ -34,6 +38,8 @@ class DashboardService
             'aging' => $this->aging($receivables),
             'top_receivables' => $this->topReceivables($receivables),
             'top_products' => $this->topProducts($months),
+            // 快取 10 分鐘，避免每次開總覽都呼叫 LINE API
+            'line_quota' => Cache::remember('dashboard:line-quota', 600, fn () => $this->line->quota()),
         ];
     }
 

@@ -73,6 +73,48 @@ class LineMessagingClientTest extends TestCase
         }
     }
 
+    public function test_monthly_quota_exhausted_is_permanent_with_clear_reason(): void
+    {
+        Http::fake(['api.line.me/*' => Http::response(['message' => 'You have reached your monthly limit.'], 429)]);
+
+        try {
+            app(LineMessagingClient::class)->pushText('Uabc', 'hi', 'b3a1c2d4-0000-4000-8000-000000000001');
+            $this->fail();
+        } catch (LineApiException $e) {
+            $this->assertFalse($e->retryable, '額度用完重試也沒用');
+            $this->assertStringContainsString('本月 LINE 訊息額度已用完', $e->getMessage());
+        }
+    }
+
+    public function test_quota_returns_usage_and_limit(): void
+    {
+        Http::fake([
+            'api.line.me/v2/bot/message/quota/consumption' => Http::response(['totalUsage' => 170]),
+            'api.line.me/v2/bot/message/quota' => Http::response(['type' => 'limited', 'value' => 200]),
+        ]);
+
+        $this->assertSame(['used' => 170, 'limit' => 200], app(LineMessagingClient::class)->quota());
+    }
+
+    public function test_quota_without_limit(): void
+    {
+        Http::fake([
+            'api.line.me/v2/bot/message/quota/consumption' => Http::response(['totalUsage' => 8000]),
+            'api.line.me/v2/bot/message/quota' => Http::response(['type' => 'none']),
+        ]);
+
+        $this->assertSame(['used' => 8000, 'limit' => null], app(LineMessagingClient::class)->quota());
+    }
+
+    public function test_quota_is_null_when_unavailable(): void
+    {
+        Http::fake(['api.line.me/*' => Http::response([], 500)]);
+        $this->assertNull(app(LineMessagingClient::class)->quota());
+
+        config(['services.line.channel_access_token' => null]);
+        $this->assertNull(app(LineMessagingClient::class)->quota());
+    }
+
     public function test_is_configured_requires_both_credentials(): void
     {
         $this->assertTrue(app(LineMessagingClient::class)->isConfigured());

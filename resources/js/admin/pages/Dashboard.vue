@@ -44,6 +44,16 @@ const trend = computed(() => ({
 }));
 const aging = computed(() => data.value.aging.map((a, i) => ({ label: a.label, value: a.amount, color: AGING_RAMP[i], note: a.orders ? `${a.orders} 張` : '' })));
 const products = computed(() => data.value.top_products.map((p) => ({ label: p.product_name, value: p.amount, note: `${p.quantity.toLocaleString('zh-TW')} ${p.unit}` })));
+// LINE 訊息用量量表：同色系淺色軌道；80% 起為警告色、用完為危險色，並一律附圖示與文字
+const lineQuota = computed(() => {
+    const q = data.value?.line_quota;
+    if (!q) return null;
+    const ratio = q.limit ? q.used / q.limit : null;
+    const level = ratio === null ? 'ok' : ratio >= 1 ? 'critical' : ratio >= 0.8 ? 'warning' : 'ok';
+    return { ...q, ratio, level };
+});
+const quotaFill = { ok: '#2a78d6', warning: '#fab219', critical: '#d03b3b' };
+
 const overdue = computed(() => data.value.aging.slice(2).reduce((sum, a) => sum + a.amount, 0));
 </script>
 
@@ -92,6 +102,15 @@ const overdue = computed(() => data.value.aging.slice(2).reduce((sum, a) => sum 
                         <p class="text-sm text-gray-600">待確認訂單</p>
                         <p class="mt-1 text-2xl font-semibold">{{ data.summary.pending_orders }} 張</p>
                     </RouterLink>
+                    <div v-if="lineQuota" class="rounded bg-white p-4 shadow">
+                        <p class="text-sm text-gray-600">本月 LINE 訊息</p>
+                        <p class="mt-1 text-2xl font-semibold">{{ lineQuota.used.toLocaleString('zh-TW') }}<span class="text-base font-normal text-gray-500"> / {{ lineQuota.limit?.toLocaleString('zh-TW') ?? '不限' }} 則</span></p>
+                        <div v-if="lineQuota.ratio !== null" class="mt-2 h-2 rounded bg-[#cde2fb]" role="meter" :aria-valuenow="lineQuota.used" aria-valuemin="0" :aria-valuemax="lineQuota.limit" aria-label="本月 LINE 訊息用量">
+                            <div class="h-2 rounded" :style="{ width: `${Math.min(100, lineQuota.ratio * 100)}%`, background: quotaFill[lineQuota.level] }"></div>
+                        </div>
+                        <p v-if="lineQuota.level === 'warning'" class="mt-1 text-xs text-amber-800">⚠ 接近上限，用完後當月通知將送不出去</p>
+                        <p v-if="lineQuota.level === 'critical'" class="mt-1 text-xs text-red-700">⛔ 已用完，請升級 LINE 官方帳號方案</p>
+                    </div>
                     <RouterLink to="/inventory?low=1" class="rounded bg-white p-4 shadow hover:ring-2 hover:ring-blue-200">
                         <p class="text-sm text-gray-600">低庫存規格</p>
                         <p class="mt-1 text-2xl font-semibold">{{ data.summary.low_stock_variants }} 項</p>

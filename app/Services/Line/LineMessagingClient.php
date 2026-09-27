@@ -5,6 +5,7 @@ namespace App\Services\Line;
 use App\Exceptions\LineApiException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * LINE Messaging API 的最小封裝（推播＋webhook 驗簽）。
@@ -12,7 +13,9 @@ use Illuminate\Support\Facades\Http;
  */
 class LineMessagingClient
 {
-    private const PUSH_URL = 'https://api.line.me/v2/bot/message/push';
+    private const API_BASE = 'https://api.line.me';
+
+    private const PUSH_URL = self::API_BASE.'/v2/bot/message/push';
 
     private const MAX_TEXT_LENGTH = 5000;
 
@@ -42,10 +45,52 @@ class LineMessagingClient
             return;
         }
 
+        // 429 同時用於「請求太頻繁」（可重試）與「本月免費額度用完」（重試無用），只能以訊息內容區分
+        if ($response->status() === 429 && str_contains(strtolower((string) $response->json('message')), 'monthly limit')) {
+            throw new LineApiException(
+                '本月 LINE 訊息額度已用完，當月無法再推播；請至 LINE 官方帳號管理後台升級方案（LINE 回應：'.$response->json('message').'）',
+                retryable: false,
+            );
+        }
+
         throw new LineApiException(
             sprintf('LINE 推播失敗（HTTP %d）：%s', $response->status(), $response->json('message') ?? $response->body()),
             retryable: $response->status() === 429 || $response->serverError(),
         );
+    }
+
+    /**
+     * 本月訊息用量與上限（含從官方帳號管理後台手動發送的訊息）。
+     * 無法取得時回傳 null 並記錄，不影響呼叫端。
+     *
+     * @return array{used: int, limit: ?int}|null limit 為 null 表示無上限（可加購的方案）
+     */
+    public function quota(): ?array
+    {
+        if (! $this->isConfigured()) {
+            return null;
+        }
+
+        try {
+            $client = Http::withToken(config('services.line.channel_access_token'))->timeout(5);
+            $limit = $client->get(self::API_BASE.'/v2/bot/message/quota');
+            $usage = $client->get(self::API_BASE.'/v2/bot/message/quota/consumption');
+        } catch (ConnectionException $e) {
+            Log::warning('無法取得 LINE 訊息用量', ['error' => $e->getMessage()]);
+
+            return null;
+        }
+
+        if ($limit->failed() || $usage->failed()) {
+            Log::warning('無法取得 LINE 訊息用量', ['status' => [$limit->status(), $usage->status()]]);
+
+            return null;
+        }
+
+        return [
+            'used' => (int) $usage->json('totalUsage'),
+            'limit' => $limit->json('type') === 'limited' ? (int) $limit->json('value') : null,
+        ];
     }
 
     /** 以原始 request body 驗證 X-Line-Signature（不可先 json_decode 再編碼） */

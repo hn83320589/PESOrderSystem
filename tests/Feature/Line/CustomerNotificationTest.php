@@ -110,6 +110,19 @@ class CustomerNotificationTest extends TestCase
         $this->assertSame([$log->retry_key], $keys->values()->all(), '重試必須沿用同一組 retry key');
     }
 
+    public function test_monthly_quota_exhausted_fails_immediately_without_retry(): void
+    {
+        Http::fake(['api.line.me/*' => Http::response(['message' => 'You have reached your monthly limit.'], 429)]);
+        $customer = Customer::factory()->withLine()->create();
+
+        app(CustomerNotifier::class)->notify($customer, 'test', '標題', '內容');
+
+        $log = $this->lineLog($customer);
+        $this->assertSame(NotificationStatus::Failed, $log->status);
+        $this->assertStringContainsString('本月 LINE 訊息額度已用完', $log->error);
+        Http::assertSentCount(1);
+    }
+
     public function test_job_marks_failed_after_exhausting_retries(): void
     {
         Queue::fake();
