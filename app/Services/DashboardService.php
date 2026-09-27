@@ -43,6 +43,7 @@ class DashboardService
         $lastMonth = $thisMonth->copy()->subMonthNoOverflow();
 
         return [
+            ...$this->grossProfit($thisMonth),
             'receivable' => (int) $receivables->sum('amount'),
             'shipped_this_month' => $this->shippedTotal($thisMonth, now()),
             'shipped_last_month' => $this->shippedTotal($lastMonth, $thisMonth->copy()->subSecond()),
@@ -141,6 +142,26 @@ class DashboardService
                 'amount' => $p->amount,
                 'days' => (int) $p->order->shipped_at->copy()->startOfDay()->diffInDays($today),
             ]);
+    }
+
+    /**
+     * 本月至今毛利。只計有成本快照的品項（第一階段的舊單、尚未進過貨的商品沒有成本），
+     * 並回傳涵蓋率，避免把沒有成本的銷售當成 100% 毛利。
+     */
+    private function grossProfit(Carbon $from): array
+    {
+        $items = OrderItem::whereHas('order', fn ($q) => $q->where('status', OrderStatus::Shipped)->where('shipped_at', '>=', $from))
+            ->get(['quantity', 'subtotal', 'unit_cost']);
+        $costed = $items->whereNotNull('unit_cost');
+        $costedSales = (int) $costed->sum('subtotal');
+        $profit = (int) round($costed->sum(fn (OrderItem $i) => $i->subtotal - $i->unit_cost * $i->quantity));
+        $totalSales = (int) $items->sum('subtotal');
+
+        return [
+            'gross_profit_this_month' => $profit,
+            'gross_margin_rate' => $costedSales > 0 ? round($profit / $costedSales, 4) : null,
+            'cost_coverage' => $totalSales > 0 ? round($costedSales / $totalSales, 4) : null,
+        ];
     }
 
     private function shippedTotal(Carbon $from, Carbon $to): int

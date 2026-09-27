@@ -52,6 +52,17 @@ Route::prefix('admin')->group(function () {
         Route::post('payments/{payment}/mark-paid', [Admin\PaymentController::class, 'markPaid']);
         Route::post('payments/{payment}/mark-unpaid', [Admin\PaymentController::class, 'markUnpaid']);
 
+        Route::get('suppliers', [Admin\SupplierController::class, 'index']);
+        Route::post('suppliers', [Admin\SupplierController::class, 'store']);
+        Route::patch('suppliers/{supplier}', [Admin\SupplierController::class, 'update']);
+
+        Route::get('purchase-orders', [Admin\PurchaseOrderController::class, 'index']);
+        Route::post('purchase-orders', [Admin\PurchaseOrderController::class, 'store']);
+        Route::get('purchase-orders/{purchaseOrder}', [Admin\PurchaseOrderController::class, 'show']);
+        Route::post('purchase-orders/{purchaseOrder}/receive', [Admin\PurchaseOrderController::class, 'receive']);
+        Route::post('purchase-orders/{purchaseOrder}/cancel', [Admin\PurchaseOrderController::class, 'cancel']);
+        Route::get('reorder-suggestions', [Admin\PurchaseOrderController::class, 'suggestions']);
+
         Route::get('notifications', [Admin\NotificationController::class, 'index']);
         Route::post('notifications/{notification}/resend', [Admin\NotificationController::class, 'resend']);
 

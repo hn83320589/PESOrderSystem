@@ -127,6 +127,23 @@ class DashboardTest extends TestCase
         $this->assertSame(900, $products[0]['amount']);
     }
 
+    public function test_gross_profit_this_month_with_cost_coverage(): void
+    {
+        // 有成本：售 1000、成本 600 → 毛利 400
+        $costed = ProductVariant::factory()->withStock(10)->create(['price' => 1000, 'avg_cost' => 600]);
+        $service = app(OrderService::class);
+        $order = $service->create($this->alpha, [['variant_id' => $costed->id, 'quantity' => 1]], PaymentMethod::BankTransfer, OrderSource::Admin);
+        $service->confirm($order);
+        $service->ship($order->fresh());
+        // 無成本資料（第一階段的舊商品）：售 1000
+        $this->shipped($this->beta, 1000, '2026-09-10 10:00');
+
+        $this->getJson('/api/admin/dashboard')
+            ->assertJsonPath('data.summary.gross_profit_this_month', 400)
+            ->assertJsonPath('data.summary.gross_margin_rate', 0.4)
+            ->assertJsonPath('data.summary.cost_coverage', 0.5);
+    }
+
     public function test_months_parameter_is_limited(): void
     {
         $this->getJson('/api/admin/dashboard?months=99')->assertUnprocessable();
