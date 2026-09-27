@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\PurchaseOrder;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
             'reservation' => Reservation::class,
             'customer' => Customer::class,
             'user' => User::class,
+            'purchase_order' => PurchaseOrder::class,
         ]);
     }
 }

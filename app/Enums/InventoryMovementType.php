@@ -5,6 +5,7 @@ namespace App\Enums;
 enum InventoryMovementType: string
 {
     case Adjust = 'adjust';
+    case Purchase = 'purchase';
     case Reserve = 'reserve';
     case ReleaseReservation = 'release_reservation';
     case Allocate = 'allocate';
@@ -15,6 +16,7 @@ enum InventoryMovementType: string
     {
         return match ($this) {
             self::Adjust => '庫存調整',
+            self::Purchase => '進貨入庫',
             self::Reserve => '熟客預留',
             self::ReleaseReservation => '預留釋放',
             self::Allocate => '訂單佔用',

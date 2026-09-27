@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['product_id', 'spec', 'sku', 'price', 'is_active'])]
+#[Fillable(['product_id', 'spec', 'sku', 'price', 'avg_cost', 'is_active'])]
 class ProductVariant extends Model
 {
     /** @use HasFactory<ProductVariantFactory> */
@@ -26,6 +26,7 @@ class ProductVariant extends Model
     {
         return [
             'price' => 'integer',
+            'avg_cost' => 'float',
             'is_active' => 'boolean',
         ];
     }

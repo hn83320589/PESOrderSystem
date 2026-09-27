@@ -30,6 +30,14 @@ class InventoryService
         return $this->apply($variantId, InventoryMovementType::Adjust, $delta, 0, 0, null, $user, $note);
     }
 
+    /** 進貨單到貨入庫 */
+    public function receive(int $variantId, int $quantity, Model $reference, ?User $user = null): InventoryMovement
+    {
+        $this->assertPositive($quantity);
+
+        return $this->apply($variantId, InventoryMovementType::Purchase, $quantity, 0, 0, $reference, $user);
+    }
+
     public function reserve(int $variantId, int $quantity, Model $reference, ?User $user = null): InventoryMovement
     {
         $this->assertPositive($quantity);

@@ -162,7 +162,10 @@ class OrderService
     {
         return $this->transition($order, [OrderStatus::Confirmed], OrderStatus::Shipped, '出貨', ['shipped_at' => now()],
             function (Order $order) use ($user) {
+                // 出貨當下的平均成本快照，之後進價變動不影響已出貨的毛利
+                $costs = ProductVariant::whereIn('id', $order->items->pluck('product_variant_id'))->pluck('avg_cost', 'id');
                 foreach ($order->items as $item) {
+                    $item->update(['unit_cost' => $costs[$item->product_variant_id] ?? null]);
                     $this->inventory->ship($item->product_variant_id, $item->quantity, $order, $user);
                 }
             });
