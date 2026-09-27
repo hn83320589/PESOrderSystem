@@ -86,6 +86,10 @@ Route::prefix('customer')->middleware(['auth:customer', 'customer.bound'])->grou
     Route::get('orders/{order}/pdf', [Customer\OrderController::class, 'pdf']);
     Route::get('recent-orders', [Customer\OrderController::class, 'recent']);
 
+    Route::get('favorites', [Customer\FavoriteOrderController::class, 'index']);
+    Route::post('favorites', [Customer\FavoriteOrderController::class, 'store']);
+    Route::delete('favorites/{favorite}', [Customer\FavoriteOrderController::class, 'destroy']);
+
     Route::get('reservations', [Customer\ReservationController::class, 'index']);
     Route::post('reservations/{reservation}/confirm', [Customer\ReservationController::class, 'confirm'])->middleware('throttle:20,1');
 

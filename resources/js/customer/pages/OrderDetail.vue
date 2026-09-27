@@ -2,11 +2,30 @@
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { api } from '../../shared/http';
+import { errorMessage } from '../../shared/format';
 import { longDate, money, orderStatusText, shop } from '../store';
 
 const route = useRoute();
 const order = ref(null);
 const notFound = ref(false);
+
+// 存成常用組合（名稱可不填，預設「常用 N」）
+const saving = ref(null); // null：未開啟；{ name }：填寫中
+const savedMessage = ref('');
+const saveError = ref('');
+async function saveFavorite() {
+    saveError.value = '';
+    try {
+        const { data } = await api('POST', '/api/customer/favorites', {
+            name: saving.value.name || null,
+            items: order.value.items.map((i) => ({ variant_id: i.variant_id, quantity: i.quantity })),
+        });
+        saving.value = null;
+        savedMessage.value = `已存成「${data.name}」。下次按「照上次叫的貨」，最上面就找得到。`;
+    } catch (e) {
+        saveError.value = errorMessage(e);
+    }
+}
 
 onMounted(async () => {
     try {
@@ -59,6 +78,18 @@ const steps = [
             </section>
 
             <a :href="`/api/customer/orders/${order.id}/pdf`" target="_blank" class="cu-btn cu-btn-plain">看／印訂貨單</a>
+
+            <p v-if="savedMessage" class="cu-panel border-l-8 border-green-700 p-4 text-lg" role="status">{{ savedMessage }}</p>
+            <button v-else-if="!saving" class="cu-btn cu-btn-plain" @click="saving = { name: '' }">把這張存成常用</button>
+            <form v-else class="cu-panel space-y-3 p-5" @submit.prevent="saveFavorite">
+                <label class="block">
+                    <span class="mb-2 block text-lg font-bold">取個名字（可以不填）</span>
+                    <input v-model="saving.name" maxlength="50" class="cu-input" placeholder="例如：工地標準包" />
+                </label>
+                <p v-if="saveError" class="text-lg text-cu-slip" role="alert">{{ saveError }}</p>
+                <button class="cu-btn cu-btn-primary">存起來</button>
+                <button type="button" class="cu-btn cu-btn-plain" @click="saving = null">不用了</button>
+            </form>
             <a v-if="shop.phone" :href="`tel:${shop.phone}`" class="cu-btn cu-btn-plain">要改訂單請打給店家</a>
         </template>
     </div>

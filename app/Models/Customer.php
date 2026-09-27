@@ -69,6 +69,11 @@ class Customer extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function favoriteOrders(): HasMany
+    {
+        return $this->hasMany(FavoriteOrder::class);
+    }
+
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
