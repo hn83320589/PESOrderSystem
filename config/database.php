@@ -38,10 +38,12 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
+            // 多個 process（網頁、queue worker、排程）同時寫入時排隊等候而非立即失敗
+            'busy_timeout' => env('DB_BUSY_TIMEOUT', 5000),
             'journal_mode' => null,
             'synchronous' => null,
-            'transaction_mode' => 'DEFERRED',
+            // 交易一開始就取得寫入鎖，避免 DEFERRED 升級鎖時兩方互等造成 SQLITE_BUSY
+            'transaction_mode' => 'IMMEDIATE',
         ],
 
         'mysql' => [
