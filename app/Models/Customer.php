@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BillingType;
+use App\Enums\PaymentMethod;
 use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -55,6 +56,12 @@ class Customer extends Authenticatable
             'line_bound_at' => null,
             'remember_token' => null,
         ])->save();
+    }
+
+    /** 依結帳方式預設的付款方式：月結→匯款、貨到付款→現金 */
+    public function defaultPaymentMethod(): PaymentMethod
+    {
+        return $this->billing_type === BillingType::Monthly ? PaymentMethod::BankTransfer : PaymentMethod::CashOnDelivery;
     }
 
     public function orders(): HasMany

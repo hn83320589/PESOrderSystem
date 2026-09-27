@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -41,17 +42,52 @@ class OrderService
         OrderSource $source,
         ?User $user = null,
         ?string $note = null,
+        ?string $clientRequestId = null,
     ): Order {
+        // 同一客戶重複送出同一請求（連點、網路重送）時回傳既有訂單
+        if ($clientRequestId && $existing = $this->findByClientRequest($customer, $clientRequestId)) {
+            return $existing;
+        }
+
         $lines = $this->normalizeLines($items);
         $variants = $this->orderableVariants(array_keys($lines));
 
-        $order = DB::transaction(function () use ($customer, $lines, $variants, $paymentMethod, $source, $user, $note) {
+        try {
+            $order = $this->createInTransaction($customer, $lines, $variants, $paymentMethod, $source, $user, $note, $clientRequestId);
+        } catch (UniqueConstraintViolationException $e) {
+            // 兩個重複請求同時抵達：後到者撞到唯一索引，改回傳先成立的那張
+            return $this->findByClientRequest($customer, (string) $clientRequestId) ?? throw $e;
+        }
+
+        // 已定案：下單當下即產生 PDF
+        $this->pdf->generate($order);
+
+        return $order;
+    }
+
+    private function findByClientRequest(Customer $customer, string $clientRequestId): ?Order
+    {
+        return $customer->orders()->where('client_request_id', $clientRequestId)->with('items', 'payment')->first();
+    }
+
+    private function createInTransaction(
+        Customer $customer,
+        array $lines,
+        \Illuminate\Support\Collection $variants,
+        PaymentMethod $paymentMethod,
+        OrderSource $source,
+        ?User $user,
+        ?string $note,
+        ?string $clientRequestId,
+    ): Order {
+        return DB::transaction(function () use ($customer, $lines, $variants, $paymentMethod, $source, $user, $note, $clientRequestId) {
             $order = Order::create([
                 'order_no' => 'TMP-'.Str::uuid(),
                 'customer_id' => $customer->id,
                 'status' => OrderStatus::Pending,
                 'payment_method' => $paymentMethod,
                 'source' => $source,
+                'client_request_id' => $clientRequestId,
                 'created_by' => $user?->id,
                 'note' => $note,
             ]);
@@ -75,11 +111,6 @@ class OrderService
 
             return $order->load('items', 'payment');
         });
-
-        // 已定案：下單當下即產生 PDF
-        $this->pdf->generate($order);
-
-        return $order;
     }
 
     /**

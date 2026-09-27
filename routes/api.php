@@ -66,6 +66,20 @@ Route::prefix('admin')->group(function () {
 Route::prefix('customer')->middleware(['auth:customer', 'customer.bound'])->group(function () {
     Route::post('logout', [Customer\LineAuthController::class, 'logout']);
     Route::get('me', [Customer\AccountController::class, 'me']);
+    Route::get('products', [Customer\CatalogController::class, 'index']);
+
+    Route::get('orders', [Customer\OrderController::class, 'index']);
+    Route::post('orders', [Customer\OrderController::class, 'store'])->middleware('throttle:20,1');
+    Route::get('orders/{order}', [Customer\OrderController::class, 'show']);
+    Route::get('orders/{order}/pdf', [Customer\OrderController::class, 'pdf']);
+    Route::get('recent-orders', [Customer\OrderController::class, 'recent']);
+
+    Route::get('reservations', [Customer\ReservationController::class, 'index']);
+    Route::post('reservations/{reservation}/confirm', [Customer\ReservationController::class, 'confirm'])->middleware('throttle:20,1');
+
+    Route::get('notifications', [Customer\NotificationController::class, 'index']);
+    Route::post('notifications/read-all', [Customer\NotificationController::class, 'readAll']);
+    Route::post('notifications/{notification}/read', [Customer\NotificationController::class, 'read']);
 });
 
 /*
