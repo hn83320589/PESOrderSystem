@@ -33,5 +33,14 @@ Route::prefix('admin')->group(function () {
         Route::patch('customers/{customer}', [Admin\CustomerController::class, 'update']);
         Route::post('customers/{customer}/line-bind-link', [Admin\CustomerController::class, 'issueBindLink']);
         Route::delete('customers/{customer}/line-binding', [Admin\CustomerController::class, 'unbindLine']);
+        Route::get('customers/{customer}/recent-orders', [Admin\OrderController::class, 'recentForCustomer']);
+
+        Route::get('orders', [Admin\OrderController::class, 'index']);
+        Route::post('orders', [Admin\OrderController::class, 'store']);
+        Route::get('orders/{order}', [Admin\OrderController::class, 'show']);
+        Route::patch('orders/{order}', [Admin\OrderController::class, 'update']);
+        Route::post('orders/{order}/confirm', [Admin\OrderController::class, 'confirm']);
+        Route::post('orders/{order}/ship', [Admin\OrderController::class, 'ship']);
+        Route::post('orders/{order}/expire', [Admin\OrderController::class, 'expire']);
     });
 });
